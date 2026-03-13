@@ -6,6 +6,11 @@ import { AnimatePresence, motion } from "framer-motion";
 const words = [
   { text: "Nayaab", lang: "en" },
   { text: "ನಯಾಬ್", lang: "kn" },
+  { text: "നയാബ്", lang: "ml" },
+  { text: "நயாப்", lang: "ta" },
+  { text: "నయాబ్", lang: "te" },
+  { text: "नायाब", lang: "hi" },
+  { text: "ਨਾਇਆਬ", lang: "pa" },
   { text: "نایاب", lang: "ur" },
 ];
 
