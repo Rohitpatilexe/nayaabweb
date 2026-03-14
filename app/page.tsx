@@ -1,7 +1,10 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, useInView } from "framer-motion";
+import { Dancing_Script } from 'next/font/google';
+
+const cursiveFont = Dancing_Script({ subsets: ['latin'], weight: ['700'] });
 import {
   Smartphone,
   UserPlus,
@@ -77,17 +80,61 @@ export default function Home() {
   const yBack = useTransform(scrollY, (value) => value * 0.05);
   const yFront = useTransform(scrollY, (value) => value * -0.05);
 
-  /* ── How it Works carousel state ── */
-  const [currentIndex, setCurrentIndex] = useState(0);
+  /* ── Testimonials state ── */
+  const testimonialsRef = useRef(null);
+  const isTestimonialsInView = useInView(testimonialsRef, { once: true, margin: "-100px" });
+  const [testimonialIndex, setTestimonialIndex] = useState(0);
+
+  const testimonials = [
+    { quote: "I moved to HSR Layout and knew nobody. Went to one Nayaab board game night and found my entire weekend crew.", author: "Rahul, 24" },
+    { quote: "It actually feels like hanging out with friends you already knew. The vibe check is 100% real.", author: "Sneha, 26" },
+    { quote: "Finally an app that isn't about dating. Just good people, good coffee, and zero pressure.", author: "Arjun, 25" }
+  ];
+
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % 3);
-    }, 7000);
-    return () => clearInterval(interval);
-  }, []);
+    if (isTestimonialsInView) {
+      const interval = setInterval(() => {
+        setTestimonialIndex((prev) => (prev + 1) % testimonials.length);
+      }, 5000);
+      return () => clearInterval(interval);
+    }
+  }, [isTestimonialsInView, testimonials.length]);
+
+  /* ── How it Works carousel state ── */
+  const howItWorksRef = useRef(null);
+  const isInView = useInView(howItWorksRef, { once: true, margin: "-100px" });
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    if (isInView) {
+      const interval = setInterval(() => {
+        setCurrentIndex((prev) => (prev + 1) % 3);
+      }, 7000);
+      return () => clearInterval(interval);
+    }
+  }, [isInView]);
 
   return (
     <main className="relative min-h-screen overflow-x-hidden bg-[#FDF8F5]">
+      {/* ─── Splash Screen Reveal ─── */}
+      <motion.div
+        className="fixed inset-0 z-[100] bg-[#111111] flex items-center justify-center"
+        initial={{ y: 0 }}
+        animate={{ y: "-100vh" }}
+        transition={{ delay: 1.8, duration: 1.2, ease: [0.76, 0, 0.24, 1] }}
+        style={{ pointerEvents: "none" }}
+      >
+        <motion.div
+          initial={{ clipPath: "inset(-50% 100% -50% -10%)", scale: 1.1 }}
+          animate={{ clipPath: "inset(-50% -10% -50% -10%)", scale: 1 }}
+          transition={{ duration: 1.5, ease: "easeOut", delay: 0.2 }}
+        >
+          <h1 className={`text-6xl md:text-8xl text-white py-4 leading-relaxed pr-4 ${cursiveFont.className}`}>
+            Nayaab
+          </h1>
+        </motion.div>
+      </motion.div>
+
       {/* ─── Editorial Film Grain Texture ─── */}
       <div
         className="fixed inset-0 pointer-events-none z-40 opacity-[0.03]"
@@ -253,8 +300,171 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ─── Editorial Scroll Statement ─── */}
+      <section className="w-full min-h-[60vh] flex items-center justify-center bg-[#FDF8F5] px-6 py-24">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2
+            className="text-4xl md:text-6xl lg:text-7xl font-bold text-[#111111] leading-tight tracking-tight"
+            style={{ fontFamily: "var(--font-heading)" }}
+          >
+            Meet people who actually match your{" "}
+            <span className="relative inline-block whitespace-nowrap isolate">
+              <span className="relative z-10">vibe.</span>
+              <motion.svg
+                viewBox="0 0 200 100"
+                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[130%] h-[150%] -z-10 pointer-events-none text-[#FF6B6B]"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="6"
+                strokeLinecap="round"
+                viewport={{ once: true, margin: "0px" }}
+              >
+                <motion.path
+                  d="M 10 50 C 10 10, 190 10, 190 50 C 190 90, 10 90, 10 50 Z"
+                  initial={{ pathLength: 0, opacity: 0 }}
+                  whileInView={{ pathLength: 1, opacity: 1 }}
+                  transition={{ duration: 1.2, ease: "easeInOut", delay: 0.2 }}
+                />
+              </motion.svg>
+            </span>
+          </h2>
+        </div>
+      </section>
+
+      {/* ─── Feature Split Section ─── */}
+      <section className="w-full bg-[#FDF8F5] py-24 px-6 md:px-12 lg:px-24">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          {/* Left Column (Image) */}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+          >
+            <img
+              src="/grid1.jpg"
+              alt="Group of friends hanging out"
+              className="w-full aspect-[4/5] object-cover rounded-2xl shadow-lg"
+            />
+          </motion.div>
+
+          {/* Right Column (Typography) */}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+          >
+            <p className="text-sm font-bold tracking-widest uppercase text-[#FF6B6B] mb-4">
+              Our Approach
+            </p>
+            <h2
+              className="text-4xl md:text-6xl font-bold text-[#111111] leading-tight mb-6"
+              style={{ fontFamily: "var(--font-heading)" }}
+            >
+              The Vibe Check.
+            </h2>
+            <p className="text-lg md:text-xl text-gray-700 leading-relaxed">
+              No weird vibes. Hosts verify requests by checking profiles, past pictures, Instagram, and even Spotify playlists so we can curate the perfect group. We've gotten pretty good at it.
+            </p>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ─── Dark Mode Testimonials ─── */}
+      <section ref={testimonialsRef} className="w-full bg-[#111111] py-32 md:py-48 px-6 flex items-center justify-center overflow-hidden">
+        <div className="relative w-full max-w-4xl h-[250px] md:h-[200px] flex items-center justify-center text-center">
+          {testimonials.map((item, index) => (
+            <motion.div
+              key={index}
+              className="absolute w-full"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{
+                opacity: index === testimonialIndex ? 1 : 0,
+                y: index === testimonialIndex ? 0 : 20
+              }}
+              transition={{ duration: 0.8, ease: "easeInOut" }}
+            >
+              <h3
+                className="text-3xl md:text-5xl font-medium text-white leading-tight mb-8"
+                style={{ fontFamily: "var(--font-heading)" }}
+              >
+                "{item.quote}"
+              </h3>
+              <p className="text-sm tracking-widest uppercase text-gray-400">
+                {item.author}
+              </p>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* ─── Staggered Community Grid ─── */}
+      <section className="w-full bg-[#FDF8F5] py-32 px-6 overflow-hidden">
+        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-16">
+          {/* Left Side (Typography & CTA) */}
+          <div className="w-full lg:w-2/5 text-center lg:text-left">
+            <h2
+              className="text-4xl md:text-6xl font-bold text-[#111111] leading-tight mb-6"
+              style={{ fontFamily: "var(--font-heading)" }}
+            >
+              Your crowd is waiting.
+            </h2>
+            <p className="text-xl text-gray-700 mb-8">
+              We're looking for people who want to make finding friends intentional, authentic, and fun.
+            </p>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-6 py-3 bg-[#111111] text-white text-base font-semibold rounded-full shadow-sm hover:shadow-md transition-shadow"
+            >
+              Download Beta
+            </motion.button>
+          </div>
+
+          {/* Right Side (Staggered Grid) */}
+          <div className="w-full lg:w-3/5 grid grid-cols-3 gap-4 md:gap-6">
+            {/* Column 1 */}
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "0px" }}
+              transition={{ duration: 0.8, delay: 0.1, ease: "easeOut" }}
+              className="flex flex-col gap-4 md:gap-6 mt-12"
+            >
+              <img src="/grid1.jpg" alt="" className="w-full aspect-[4/5] object-cover rounded-2xl" />
+              <img src="/grid2.jpg" alt="" className="w-full aspect-[4/5] object-cover rounded-2xl" />
+            </motion.div>
+
+            {/* Column 2 */}
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "0px" }}
+              transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
+              className="flex flex-col gap-4 md:gap-6 mt-24"
+            >
+              <img src="/grid3.jpg" alt="" className="w-full aspect-square object-cover rounded-2xl" />
+              <img src="/grid4.jpg" alt="" className="w-full aspect-square object-cover rounded-2xl" />
+            </motion.div>
+
+            {/* Column 3 */}
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "0px" }}
+              transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
+              className="flex flex-col gap-4 md:gap-6 -mt-8"
+            >
+              <img src="/grid5.jpg" alt="" className="w-full aspect-[4/5] object-cover rounded-2xl" />
+              <img src="/grid6.jpg" alt="" className="w-full aspect-[4/5] object-cover rounded-2xl" />
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
       {/* ─── Section 1: How It Works (3D Carousel) ─── */}
-      <section className="relative z-10 mx-auto max-w-7xl w-full px-6 sm:px-10 lg:px-16 py-12 lg:py-24">
+      <section ref={howItWorksRef} className="relative z-10 mx-auto max-w-7xl w-full px-6 sm:px-10 lg:px-16 py-12 lg:py-24">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -398,92 +608,42 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ─── Section 3: Final CTA & Footer ─── */}
-      <section className="relative z-10 w-full pt-16 lg:pt-24 pb-12">
-        {/* CTA Block */}
-        <div className="max-w-5xl mx-auto px-6 mb-16">
+      {/* ─── Cinematic Bookend Footer ─── */}
+      <footer className="w-full bg-[#111111] relative overflow-hidden pt-32 pb-32 px-6 flex flex-col items-center justify-center">
+        
+        {/* Pre-Footer CTA */}
+        <div className="text-center z-20 mb-24">
+          <p className="text-sm tracking-[0.2em] uppercase text-gray-400 mb-6">
+            Join the Beta
+          </p>
+          <h2 className="text-4xl md:text-5xl font-medium text-white mb-8" style={{ fontFamily: "var(--font-heading)" }}>
+            Ready to find your crowd?
+          </h2>
+          <button className="px-8 py-4 bg-white text-black rounded-full font-medium hover:scale-105 transition-transform">
+            Download Nayaab
+          </button>
+        </div>
+
+        {/* Massive Cursive Watermark */}
+        <div className="w-full flex justify-center items-center pointer-events-none select-none">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-50px" }}
-            transition={{ duration: 0.6 }}
-            className="bg-white rounded-3xl p-10 sm:p-16 text-center shadow-xl shadow-black/5"
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 0.15, y: 0 }}
+            transition={{ duration: 1.5, ease: "easeOut" }}
+            viewport={{ once: true }}
+            className="w-full flex justify-center overflow-hidden"
           >
-            <h2
-              className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-foreground mb-4"
-              style={{ fontFamily: "var(--font-heading)" }}
-            >
-              Ready to find your crowd in Namma Bengaluru?
-            </h2>
-            <p className="text-lg text-text-secondary mb-10 max-w-2xl mx-auto">
-              Join the beta, create your profile, and start hanging out this
-              weekend.
-            </p>
-            <motion.a
-              href="#"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-foreground text-white font-semibold text-lg hover:shadow-lg transition-all mx-auto"
-            >
-              <Smartphone className="w-5 h-5" />
-              Download Android APK
-            </motion.a>
+            <h1 className={`text-[25vw] leading-normal pb-12 md:pb-24 text-white ${cursiveFont.className}`}>
+              Nayaab
+            </h1>
           </motion.div>
         </div>
 
-        {/* Minimal Footer */}
-        <footer className="max-w-7xl mx-auto px-6 border-t border-gray-200 pt-8 pb-12">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-            {/* Left */}
-            <p className="text-sm font-semibold text-foreground">
-              Made for Bangalore. © 2026 Nayaab.
-            </p>
-
-            {/* Center (Social Icons) */}
-            <div className="flex items-center gap-4">
-              <a
-                href="#"
-                className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-foreground hover:bg-gray-200 transition-colors"
-                aria-label="Instagram"
-              >
-                <Instagram className="w-4 h-4" />
-              </a>
-              <a
-                href="#"
-                className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-foreground hover:bg-gray-200 transition-colors"
-                aria-label="Spotify / Music"
-              >
-                <Music className="w-4 h-4" />
-              </a>
-              <a
-                href="#"
-                className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-foreground hover:bg-gray-200 transition-colors"
-                aria-label="Email Address"
-              >
-                <Mail className="w-4 h-4" />
-              </a>
-            </div>
-
-            {/* Right */}
-            <div className="text-xs text-text-muted text-center md:text-right">
-              Feedback/Bugs:{" "}
-              <a
-                href="mailto:hussainsakib44@gmail.com"
-                className="hover:text-foreground transition-colors break-all"
-              >
-                hussainsakib44@gmail.com
-              </a>
-              ,{" "}
-              <a
-                href="mailto:rohitypatil2004@gmail.com"
-                className="hover:text-foreground transition-colors break-all"
-              >
-                rohitypatil2004@gmail.com
-              </a>
-            </div>
-          </div>
-        </footer>
-      </section>
+        {/* Minimal Copyright */}
+        <div className="mt-12 text-gray-500 text-sm z-20 text-center">
+          <p>© 2026 Nayaab. Made for Bangalore.</p>
+        </div>
+      </footer>
     </main>
   );
 }
